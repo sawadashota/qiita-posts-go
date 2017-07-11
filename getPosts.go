@@ -1,10 +1,10 @@
 package qiita
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
-	"io/ioutil"
 )
 
 type Client struct {
@@ -14,15 +14,14 @@ type Client struct {
 	Params   url.Values
 }
 
-const QiitaPagePerPost   = 100
+const PagePerPost = 100
 
-
-func GetPosts(page int, teamName string, token string) (int, []Post) {
+func Posts(page int, teamName string, token string) Client {
 	client := Client{TeamName: teamName, Token: token}
 	client.Endpoint = client.generateEndpoint("/api/v2/items")
 	client.Params = setValues(strconv.Itoa(page))
 
-	return client.request()
+	return client
 }
 
 func (c Client) generateEndpoint(path string) url.URL {
@@ -36,13 +35,13 @@ func (c Client) generateEndpoint(path string) url.URL {
 
 func setValues(page string) url.Values {
 	values := url.Values{}
-	values.Add("per_page", strconv.Itoa(QiitaPagePerPost))
+	values.Add("per_page", strconv.Itoa(PagePerPost))
 	values.Add("page", page)
 
 	return values
 }
 
-func (c Client) request() (int, []Post) {
+func (c Client) Get() (int, []Post) {
 	req, _ := http.NewRequest("GET", c.Endpoint.String(), nil)
 	req.Header.Set("Authorization", "Bearer "+c.Token)
 	req.URL.RawQuery = c.Params.Encode()
