@@ -41,9 +41,9 @@ type User struct {
 ```
 
 ## 使い方
-### GetPosts
+### 投稿の取得
 ```
-GetPosts(page int, teamName string, token string) (int, []Post)
+Posts(page int, teamName string, token string).Get()
 ```
 
-ステータスコードと投稿のスライスを返します。
+ステータスコードと投稿のスライス`[]Post`を返します。
